@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+  <meta charset="UTF-8">
+  <title>Foomka Ardayga - Iskuul</title>
+  <style>
+    @page { size: A4; margin: 2cm; }
+    @media print {
+      .print-button, .section-title, input, label, #student-photo-input, #student-photo-preview,
+      table:not(#student-print-data table), .checkboxes { display: none !important; }
+      #student-print-data { display: block !important; font-size:22px; font-family:'Segoe UI', Arial, sans-serif; color:#222; }
+      #student-print-data td, #student-print-data th { font-size:22px; font-weight:bold; padding:10px 8px; }
+      #student-print-data .print-footer { margin-top:60px; padding-top:30px; border-top:2px solid #e0e0e0; text-align:left; font-size:20px; color:#004080; }
+      #student-print-data .print-paragraph { text-align:justify; line-height:1.6; font-size:22px; color:#222; margin-top:20px; margin-bottom:25px; }
+      #student-print-data .print-value { color:#004080 !important; font-weight:bold; }
+      .top-signature-print-hide, .cancel-print-button { display:none !important; }
+    }
+    body { font-family:'Segoe UI', sans-serif; background:#f9f9f9; padding:0; margin:0; }
+    .container { width:21cm; margin:auto; background:white; padding:2cm; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+    .logo { text-align:center; margin-bottom:20px; }
+    .logo img { max-height:100px; }
+    h1, h2 { text-align:center; color:#004080; margin:5px 0; }
+    .section { margin-top:20px; }
+    .section-title { font-weight:bold; background:#e6f0ff; padding:5px 10px; border-left:5px solid #0073e6; margin-bottom:10px; color:#004080; font-size:24px; }
+    table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+    td { padding:6px 8px; vertical-align:top; }
+    input[type="text"], input[type="date"], input[type="number"], input[type="tel"] { width:100%; padding:6px; border:1px solid #ccc; border-radius:4px; }
+    .styled-input { width:100% !important; font-size:18px !important; padding:8px !important; border-radius:4px !important; border:1px solid #ccc !important; box-sizing:border-box; }
+    .checkboxes { display:flex; flex-wrap:wrap; gap:10px; }
+    .checkboxes input { margin-right:5px; }
+    .signature-row td { height:80px; vertical-align:bottom; }
+    .print-button { text-align:center; margin-top:20px; }
+    button { padding:10px 20px; font-size:16px; background:#0073e6; color:white; border:none; border-radius:5px; cursor:pointer; }
+    button:hover { background:#005bb5; }
+    .student-photo-style { max-width:250px; max-height:250px; width:250px; height:250px; border:1px solid #ccc; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.2); margin-top:5px; transition:transform 0.3s ease; object-fit:cover; background:#fff; display:block; }
+    label { font-weight:bold; color:#004080; font-size:20px; }
+    .input-group { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+    .cancel-print-button { display:none; position:fixed; top:30px; right:30px; z-index:9999; padding:18px 36px; font-size:22px; font-weight:bold; background:#e53935; color:#fff; border:none; border-radius:8px; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.2); transition:background 0.2s; }
+    .cancel-print-button:hover { background:#b71c1c; }
+  </style>
+</head>
+<body>
+  <!-- Password Overlay -->
+  <div id="password-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:flex;justify-content:center;align-items:center;z-index:9999;">
+    <div style="background:white;padding:30px;border-radius:10px;text-align:center;">
+      <h2>Gali Password-ka</h2>
+      <input type="password" id="password-input" placeholder="Password..." style="padding:10px;font-size:18px;border:1px solid #ccc;border-radius:5px;width:220px;margin-bottom:15px;">
+      <br>
+      <button id="password-btn" style="padding:10px 20px;font-size:16px;background:#0073e6;color:white;border:none;border-radius:5px;cursor:pointer;">Soo gal</button>
+      <div id="password-message" style="margin-top:10px;font-size:16px;color:red;min-height:22px;"></div>
+    </div>
+  </div>
+
+  <div class="container" id="main-content" style="display:none;">
+    <div class="logo"><img src="nileyn.png" alt="Logo Iskuulka"></div>
+    <h2>Foomka Diiwaangelinta Ardayda</h2>
+    <div class="section">
+      <div class="section-title">1. Xogta Ardayga</div>
+      <table>
+        <tr>
+          <td style="width:60%;"><div style="display:flex; flex-direction:column; gap:10px;">
+              <label for="magac">Magaca Ardayga:</label>
+              <input type="text" id="magac" name="magac" required class="styled-input">
+              <label for="hooyo">Magaca Hooyada:</label>
+              <input type="text" id="hooyo" name="hooyo" required class="styled-input">
+              <label for="da">Da'da:</label>
+              <input type="number" id="da" name="da" min="1" required class="styled-input">
+            </div></td>
+          <td style="width:40%; text-align:center;">
+            <input type="file" id="student-photo-input" accept=".png,.tif,.jpg,.jpeg" required style="margin-bottom:10px;">
+            <br>
+            <img id="student-photo-preview" src="" alt="Sawirka Ardayga" class="student-photo-style" style="display:none;"/>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">2. Xogta Waalidka / Mas'uulka</div>
+      <div class="input-group">
+        <label for="waalid">Magaca Waalidka/ Mas'uulka:</label>
+        <input type="text" id="waalid" name="waalid" class="styled-input">
+        <label for="degmo">Degmada / Xaafadda:</label>
+        <input type="text" id="degmo" name="degmo" class="styled-input">
+        <label for="tel">Lambarka Waalidka/ Mas'uulka:</label>
+        <input type="tel" id="tel" name="tel" class="styled-input">
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">3. Warbixinta Waalidka / Mas'uulka</div>
+      <div class="checkboxes">
+        <div><input type="radio" id="SHAQO" name="warbixin" value="SHAQO"><label for="SHAQO"> SHAQO </label></div>
+        <div><input type="radio" id="XAFAD-JOOG" name="warbixin" value="XAFAD-JOOG"><label for="XAFAD-JOOG"> XAFAD-JOOG</label></div>
+        <div><input type="radio" id="WAXBARASHO" name="warbixin" value="WAXBARASHO"><label for="WAXBARASHO"> WAXBARASHO</label></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-title">4. Taariikh & Saxiix</div>
+      <div class="input-group">
+        <label for="saxiix_taariikh">Taariikhda:</label>
+        <input type="date" id="saxiix_taariikh" name="saxiix_taariikh" class="styled-input">
+      </div>
+      <div style="font-weight:bold; color:#004080; font-size:18px; margin-top:10px;" class="top-signature-print-hide">Saxiixa: _______________________________</div>
+    </div>
+    <div class="print-button"><button onclick="printForm()">Daabac Foomka</button></div>
+  </div>
+
+  <div id="student-print-data" style="display:none;">
+    <div class="section">
+      <div class="section-title">1. Xogta Ardayga</div>
+      <table>
+        <tr>
+          <td>Magaca Ardayga:</td><td class="print-value" id="print-magac"></td>
+          <td rowspan="4" style="text-align:center; vertical-align:top;">
+            <img id="print-student-photo" src="" alt="Sawirka Ardayga" class="student-photo-style"/>
+          </td>
+        </tr>
+        <tr><td>Magaca Hooyada:</td><td class="print-value" id="print-hooyo"></td></tr>
+        <tr><td>Da'da:</td><td class="print-value" id="print-da"></td></tr>
+      </table>
+    </div>
+    <div class="section">
+      <div class="section-title">2. Xogta Waalidka / Mas'uulka</div>
+      <table>
+        <tr><td>Magaca Waalidka/ Mas'uulka:</td><td class="print-value" id="print-waalid"></td></tr>
+        <tr><td>Degmada / Xaafadda:</td><td class="print-value" id="print-degmo"></td></tr>
+        <tr><td>Lambarka Waalidka/ Mas'uulka:</td><td class="print-value" id="print-tel"></td></tr>
+      </table>
+    </div>
+    <div class="print-footer">
+      <div class="print-paragraph">
+        Waxaan ogolahay kuna qanac sanahay ANIGOO AH <br><span class="print-value" id="print-hebel"></span></br> 
+        in <b>ARDAYGA Aan MASUALKA ka ahay</b> laga diiwaan galiyo <b>iskuulka hoose dhaxe sare ee NILEYN</b>.
+      </div>
+      <table>
+        <tr><td>Taariikhda:</td><td class="print-value" id="print-saxiix-taariikh"></td></tr>
+      </table>
+      <div style="margin-top:25px; font-size:20px; color:#004080; font-weight:bold;">
+        Saxiixa: __________________________
+      </div>
+    </div>
+  </div>
+
+  <button class="cancel-print-button" id="cancelPrintBtn" onclick="cancelPrint()">Cancel</button>
+
+<script>
+  const correctPasswords = ["Npss0","npss0"];
+  let attempts = 0;
+  let lock = false;
+  const btn = document.getElementById("password-btn");
+  const input = document.getElementById("password-input");
+  const message = document.getElementById("password-message");
+
+  function checkLocalLock() {
+    const lockedUntil = localStorage.getItem("lockUntil");
+    if(lockedUntil && Date.now() < lockedUntil){
+      lock = true; btn.disabled = true; input.disabled = true;
+      startCountdown(Math.ceil((lockedUntil - Date.now())/1000));
+      return true;
+    } else { localStorage.removeItem("lockUntil"); return false; }
+  }
+
+  function startCountdown(seconds){
+    message.textContent = "Waxaad ku khaldamay 3 jeer. Fadlan sug " + seconds + " ilbiriqsi.";
+    let counter = seconds;
+    const interval = setInterval(()=>{
+      counter--;
+      message.textContent = "Waxaad ku khaldamay 3 jeer. Fadlan sug " + counter + " ilbiriqsi.";
+      if(counter <= 0){
+        clearInterval(interval); attempts = 0; lock = false; message.textContent = "";
+        btn.disabled = false; input.disabled = false;
+      }
+    },1000);
+  }
+
+  function checkPassword(){
+    if(lock) return;
+    if(correctPasswords.includes(input.value)){
+      document.getElementById("password-overlay").style.display = "none";
+      document.getElementById("main-content").style.display = "block";
+    } else {
+      attempts++;
+      if(attempts < 3){ message.textContent = "Password-ka waa khaldan, fadlan sax oo mar kale isku day."; }
+      else {
+        message.textContent = "Waxaad ku khaldamay 3 jeer. Fadlan sug 30 ilbiriqsi.";
+        btn.disabled = true; input.disabled = true; lock = true;
+        const lockTime = Date.now() + 30000; localStorage.setItem("lockUntil", lockTime);
+        startCountdown(30);
+      }
+    }
+    input.value=""; input.focus();
+  }
+
+  input.addEventListener("keydown", function(e){ if(e.key==="Enter"){ checkPassword(); }});
+  btn.addEventListener("click", checkPassword);
+  document.addEventListener("DOMContentLoaded", checkLocalLock);
+
+  let isPrinting=false;
+  function updatePrintData(){
+    document.getElementById('print-magac').textContent=document.getElementById('magac').value;
+    document.getElementById('print-hooyo').textContent=document.getElementById('hooyo').value;
+    document.getElementById('print-da').textContent=document.getElementById('da').value;
+    document.getElementById('print-student-photo').src=document.getElementById('student-photo-preview').src;
+    document.getElementById('print-waalid').textContent=document.getElementsByName('waalid')[0].value;
+    document.getElementById('print-degmo').textContent=document.getElementsByName('degmo')[0].value;
+    document.getElementById('print-tel').textContent=document.getElementsByName('tel')[0].value;
+    document.getElementById('print-saxiix-taariikh').textContent=document.getElementsByName('saxiix_taariikh')[0].value;
+    document.getElementById('print-hebel').textContent=document.getElementsByName('waalid')[0].value;
+  }
+
+  function addRealTimeUpdates(){
+    const inputs=document.querySelectorAll('input[type="text"], input[type="number"], input[type="tel"], input[type="date"]');
+    inputs.forEach(input=>{ input.addEventListener('input', updatePrintData); });
+    const radios=document.querySelectorAll('input[type="radio"]');
+    radios.forEach(radio=>{ radio.addEventListener('change', updatePrintData); });
+  }
+
+  document.getElementById('student-photo-input').addEventListener('change', function(event){
+    const file=event.target.files[0]; const preview=document.getElementById('student-photo-preview');
+    if(file){
+      const reader=new FileReader();
+      reader.onload=function(e){ preview.src=e.target.result; preview.style.display='block'; document.getElementById('print-student-photo').src=e.target.result; updatePrintData(); };
+      reader.readAsDataURL(file);
+    } else { preview.src=''; preview.style.display='none'; document.getElementById('print-student-photo').src=''; updatePrintData(); }
+  });
+
+  function printForm(){
+    const requiredFields=['magac','hooyo','da','waalid','degmo','tel','saxiix_taariikh'];
+    let valid=true;
+    requiredFields.forEach(name=>{
+      const el=document.getElementById(name) || document.getElementsByName(name)[0];
+      if(!el || !el.value) valid=false;
+    });
+    if(!document.getElementById('student-photo-preview').src || document.getElementById('student-photo-preview').src===window.location.href) valid=false;
+    if(!valid){ alert('Fadlan buuxi dhammaan xogta foomka iyo sawirka ka hor intaadan daabicin.'); return false; }
+    isPrinting=true; updatePrintData(); window.print(); isPrinting=false;
+  }
+
+  function cancelPrint(){ if(window.matchMedia('print').matches){ window.onafterprint=function(){}; window.close(); } else { window.onafterprint=function(){}; window.history.back(); } }
+
+  document.addEventListener('DOMContentLoaded', function(){ addRealTimeUpdates(); updatePrintData(); });
+</script>
+</body>
+</html>
